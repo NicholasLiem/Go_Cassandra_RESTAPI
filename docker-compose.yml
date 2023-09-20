@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  go:
+    build:
+      context: ./go
+    ports:
+      - "8000:8000" #host:container
+    container_name: go-api
+    environment:
+      - CASSANDRA_HOST=cassandra
+    depends_on:
+      - cassandra
+    links:
+      - cassandra
+
+  cassandra:
+    build:
+      context: ./cassandra
+    ports:
+      - "9042:9042"
+    container_name: cassandra_service
