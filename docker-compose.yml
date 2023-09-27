@@ -5,7 +5,7 @@ services:
     build:
       context: ./go
     ports:
-      - "8000:8000" #host:container
+      - "8000:8000"
     container_name: go-api
     environment:
       - CASSANDRA_HOST=cassandra
