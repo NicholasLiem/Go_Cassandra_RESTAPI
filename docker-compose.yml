@@ -1,6 +1,46 @@
 version: '3.9'
 
 services:
+  cassandra1:
+    image: cassandra:latest
+    container_name: cassandra1
+    environment:
+      - CASSANDRA_CLUSTER_NAME=myCluster
+      - CASSANDRA_DC=myDC
+      - CASSANDRA_RACK=myRack
+    ports:
+      - "9042:9042"
+    volumes:
+      - ./cassandra1/data:/var/lib/cassandra
+    networks:
+      - cassandra-network
+
+  cassandra2:
+    image: cassandra:latest
+    container_name: cassandra2
+    environment:
+      - CASSANDRA_SEEDS=cassandra1
+      - CASSANDRA_CLUSTER_NAME=myCluster
+      - CASSANDRA_DC=myDC
+      - CASSANDRA_RACK=myRack
+    ports:
+      - "9043:9042"
+    networks:
+      - cassandra-network
+
+  cassandra3:
+    image: cassandra:latest
+    container_name: cassandra3
+    environment:
+      - CASSANDRA_SEEDS=cassandra1
+      - CASSANDRA_CLUSTER_NAME=myCluster
+      - CASSANDRA_DC=myDC
+      - CASSANDRA_RACK=myRack
+    ports:
+      - "9044:9042"
+    networks:
+      - cassandra-network
+
   go:
     build:
       context: ./go
@@ -8,15 +48,11 @@ services:
       - "8000:8000"
     container_name: go-api
     environment:
-      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_HOST=cassandra1  # Use the first Cassandra node as the host
     depends_on:
-      - cassandra
+      - cassandra1  # Depend on the first Cassandra node
     links:
-      - cassandra
+      - cassandra1  # Link to the first Cassandra node
 
-  cassandra:
-    build:
-      context: ./cassandra
-    ports:
-      - "9042:9042"
-    container_name: cassandra_service
+networks:
+  cassandra-network:

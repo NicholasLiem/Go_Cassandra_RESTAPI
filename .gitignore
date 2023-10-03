@@ -1,2 +1,18 @@
 
 go/.env
+go/Go_Cassandra_RESTAPI.exe
+cassandra1/data/
+cassandra2/data/
+cassandra3/data/
+
+cassandra1/commitlog/
+cassandra2/commitlog/
+cassandra3/commitlog/
+cassandra1/saved_caches/
+cassandra2/saved_caches/
+cassandra3/saved_caches/
+
+cassandra1/logs/
+cassandra2/logs/
+cassandra3/logs/
+go/go.sum

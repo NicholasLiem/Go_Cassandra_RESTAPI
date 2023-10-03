@@ -1,15 +1,38 @@
-FROM golang:1.19
+#Pulling Golang Image
+FROM golang:1.20-alpine as BuildStage
 
+#Setting workdir in /app
 WORKDIR /app
 
+#Copying go mod and sum files
 COPY go.mod go.sum ./
 
+#Installing modules
 RUN go mod download
 
-COPY *.go ./
+#Copying source code and env
+COPY . ./
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
+#Compiling app
+RUN CGO_ENABLED=0 GOOS=linux go build -o /backend-app
 
-EXPOSE 8000
 
-CMD ["/docker-gs-ping"]
+# Deploy Stage
+
+FROM alpine:latest
+
+WORKDIR /
+
+COPY --from=BuildStage /backend-app /backend-app
+
+COPY .env .
+
+#Setting up the port
+EXPOSE 8080
+
+RUN addgroup -g 1000 nonroot && adduser -u 1000 -G nonroot -s /bin/sh -D nonroot
+
+USER nonroot
+
+#Running the app
+CMD ["/backend-app"]

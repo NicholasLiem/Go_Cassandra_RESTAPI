@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	gorillahandler "github.com/gorilla/handlers"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
 	"os"
-	"time"
 )
 
 func main() {
@@ -15,13 +15,12 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	serverPort := os.Getenv("PORT")
+
 	r := SetupRoutes()
-	srv := &http.Server{
-		Handler:      r,
-		Addr:         "127.0.0.1:" + os.Getenv("PORT"),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
-	}
-	fmt.Println("Listening server on port: " + os.Getenv("PORT"))
-	log.Fatal(srv.ListenAndServe())
+	headers := gorillahandler.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := gorillahandler.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
+	origins := gorillahandler.AllowedOrigins([]string{"*"})
+	fmt.Println("Running server on port " + serverPort)
+	log.Fatal(http.ListenAndServe("127.0.0.1:"+serverPort, gorillahandler.CORS(headers, methods, origins)(r)))
 }
