@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/NicholasLiem/Go_Cassandra_RESTAPI/handlers"
 	gorillahandler "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
 	"net/http"
@@ -23,4 +25,15 @@ func main() {
 	origins := gorillahandler.AllowedOrigins([]string{"*"})
 	fmt.Println("Running server on port " + serverPort)
 	log.Fatal(http.ListenAndServe(":"+serverPort, gorillahandler.CORS(headers, methods, origins)(r)))
+}
+
+func SetupRoutes() *mux.Router {
+	r := mux.NewRouter()
+	r.HandleFunc("/", handlers.StatusHandler).Methods("GET")
+	r.HandleFunc("/api/books", handlers.CreateBookHandler).Methods("POST")
+	r.HandleFunc("/api/books/all", handlers.GetAllBooksHandler).Methods("GET")
+	r.HandleFunc("/api/books/{id}", handlers.GetBookHandler).Methods("GET")
+	r.HandleFunc("/api/books/{id}", handlers.UpdateBookHandler).Methods("PUT")
+	r.HandleFunc("/api/books/{id}", handlers.DeleteBookHandler).Methods("DELETE")
+	return r
 }
