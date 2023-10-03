@@ -44,15 +44,14 @@ services:
   go:
     build:
       context: ./go
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8080:8080"
     container_name: go-api
     environment:
       - CASSANDRA_HOST=cassandra1  # Use the first Cassandra node as the host
-    depends_on:
-      - cassandra1  # Depend on the first Cassandra node
-    links:
-      - cassandra1  # Link to the first Cassandra node
+#
+  # Link to the first Cassandra node
 
 networks:
   cassandra-network:

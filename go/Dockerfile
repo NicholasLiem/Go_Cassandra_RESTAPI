@@ -36,3 +36,4 @@ USER nonroot
 
 #Running the app
 CMD ["/backend-app"]
+

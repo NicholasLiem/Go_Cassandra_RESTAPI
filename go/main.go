@@ -22,5 +22,5 @@ func main() {
 	methods := gorillahandler.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"})
 	origins := gorillahandler.AllowedOrigins([]string{"*"})
 	fmt.Println("Running server on port " + serverPort)
-	log.Fatal(http.ListenAndServe("127.0.0.1:"+serverPort, gorillahandler.CORS(headers, methods, origins)(r)))
+	log.Fatal(http.ListenAndServe(":"+serverPort, gorillahandler.CORS(headers, methods, origins)(r)))
 }

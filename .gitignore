@@ -15,4 +15,3 @@ cassandra3/saved_caches/
 cassandra1/logs/
 cassandra2/logs/
 cassandra3/logs/
-go/go.sum
