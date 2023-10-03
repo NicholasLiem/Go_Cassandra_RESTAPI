@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/NicholasLiem/Go_Cassandra_RESTAPI/datastore"
 	"github.com/NicholasLiem/Go_Cassandra_RESTAPI/models"
+	"github.com/gocql/gocql"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -18,7 +19,7 @@ func CreateBookHandler(rw http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	query := "INSERT INTO books (id, title, author, isbn) VALUES (?, ?, ?, ?)"
-	if err := datastore.Session.Query(query, book.ID, book.Title, book.Author, book.ISBN).Exec(); err != nil {
+	if err := datastore.Session.Query(query, book.ID, book.Title, book.Author, book.ISBN).Consistency(gocql.One).Exec(); err != nil {
 		http.Error(rw, "Failed to create book"+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -33,7 +34,7 @@ func GetBookHandler(rw http.ResponseWriter, r *http.Request) {
 
 	var book models.Book
 	query := "SELECT id, title, author, isbn FROM books WHERE id = ?"
-	if err := datastore.Session.Query(query, bookID).Scan(&book.ID, &book.Title, &book.Author, &book.ISBN); err != nil {
+	if err := datastore.Session.Query(query, bookID).Consistency(gocql.One).Scan(&book.ID, &book.Title, &book.Author, &book.ISBN); err != nil {
 		http.Error(rw, "Book not found", http.StatusNotFound)
 		return
 	}
@@ -57,7 +58,7 @@ func GetAllBooksHandler(rw http.ResponseWriter, r *http.Request) {
 	var books []models.Book
 	query := "SELECT id, title, author, isbn FROM books"
 
-	iter := datastore.Session.Query(query).Iter()
+	iter := datastore.Session.Query(query).Consistency(gocql.One).Iter()
 	defer iter.Close()
 
 	for {
@@ -69,7 +70,7 @@ func GetAllBooksHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := iter.Close(); err != nil {
-		http.Error(rw, "Internal server error", http.StatusInternalServerError)
+		http.Error(rw, "Internal server error"+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -101,7 +102,7 @@ func UpdateBookHandler(rw http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	query := "UPDATE books SET title = ?, author = ?, isbn = ? WHERE id = ?"
-	if err := datastore.Session.Query(query, updatedBook.Title, updatedBook.Author, updatedBook.ISBN, bookID).Exec(); err != nil {
+	if err := datastore.Session.Query(query, updatedBook.Title, updatedBook.Author, updatedBook.ISBN, bookID).Consistency(gocql.One).Exec(); err != nil {
 		http.Error(rw, "Internal server error", http.StatusInternalServerError)
 		return
 	}

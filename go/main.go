@@ -37,3 +37,24 @@ func SetupRoutes() *mux.Router {
 	r.HandleFunc("/api/books/{id}", handlers.DeleteBookHandler).Methods("DELETE")
 	return r
 }
+
+/**
+ * Creating keyspace
+ */
+
+/**
+ * Creating table
+ */
+//
+//CREATE TABLE book(
+//	id TEXT PRIMARY KEY,
+//	title TEXT,
+//	author TEXT,
+//	isbn TEXt
+//	);
+//
+//CREATE KEYSPACE IF NOT EXISTS restfulapi
+//WITH replication = {
+//	'class': 'SimpleStrategy',
+//	'replication_factor': 2
+//};

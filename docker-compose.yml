@@ -28,6 +28,19 @@ services:
     networks:
       - cassandra-network
 
+  cassandra3:
+    image: cassandra:latest
+    container_name: cassandra3
+    environment:
+      - CASSANDRA_SEEDS=cassandra1
+      - CASSANDRA_CLUSTER_NAME=myCluster
+      - CASSANDRA_DC=myDC
+      - CASSANDRA_RACK=myRack
+    ports:
+      - "9044:9042"
+    networks:
+      - cassandra-network
+
   go:
     build:
       context: ./go
@@ -35,8 +48,6 @@ services:
     ports:
       - "8080:8080"
     container_name: go-api
-    environment:
-      - CASSANDRA_HOST=cassandra1
     depends_on:
       - cassandra1
     links:
